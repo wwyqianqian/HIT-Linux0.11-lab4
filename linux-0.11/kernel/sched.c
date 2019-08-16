@@ -49,6 +49,7 @@ extern void mem_use(void);
 
 extern int timer_interrupt(void);
 extern int system_call(void);
+extern void switch_to(struct task_struct * pnext, long ldt);
 
 union task_union {
 	struct task_struct task;
@@ -61,6 +62,8 @@ long volatile jiffies=0;
 long startup_time=0;
 struct task_struct *current = &(init_task.task);
 struct task_struct *last_task_used_math = NULL;
+
+struct tss_struct *tss = &(init_task.task.tss);
 
 struct task_struct * task[NR_TASKS] = {&(init_task.task), };
 

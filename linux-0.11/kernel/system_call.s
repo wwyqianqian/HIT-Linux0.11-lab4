@@ -61,7 +61,7 @@ sa_restorer = 12
 nr_system_calls = 72
 
 KERNEL_STACK = 12
-ESP0 =4
+ESP0 = 4
 
 /*
  * Ok, I get parallel printer interrupts while using the floppy for some
@@ -264,6 +264,17 @@ switch_to:
     popl %ebp
     ret
 
+
+.align 2
+first_return_from_kernel:
+    popl %edx
+    popl %edi
+    popl %esi
+    pop %gs
+    pop %fs
+    pop %es
+    pop %ds
+    iret
 
 hd_interrupt:
 	pushl %eax

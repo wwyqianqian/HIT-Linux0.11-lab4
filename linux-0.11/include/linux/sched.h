@@ -77,7 +77,7 @@ struct tss_struct {
 	struct i387_struct i387;
 };
 
-struct tss_struct *tss = &(init_task.task.tss);
+
 
 struct task_struct {
 /* these are hardcoded - don't touch */
