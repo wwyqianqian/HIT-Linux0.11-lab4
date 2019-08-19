@@ -223,8 +223,8 @@ sys_fork:
 
 .align 2
 switch_to:
-    pushl %ebp
-    movl %esp,%ebp
+   	pushl %ebp
+   	movl %esp,%ebp
 	pushl %ecx
    	pushl %ebx
    	pushl %eax
