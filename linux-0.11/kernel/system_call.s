@@ -225,56 +225,56 @@ sys_fork:
 switch_to:
     pushl %ebp
     movl %esp,%ebp
-    pushl %ecx
-    pushl %ebx
-    pushl %eax
-    movl 8(%ebp),%ebx  # 参数 pnext 存入 ebx
-    cmpl %ebx,current  # 比较参数和 current，相等什么也不干；如果不等于 current，就开始进程切换，依次完成 PCB 的切换、TSS 中的内核栈指针的重写、内核栈的切换、LDT 的切换以及 PC 指针（即 CS:EIP）的切换。
-    je 1f
+	pushl %ecx
+   	pushl %ebx
+   	pushl %eax
+   	movl 8(%ebp),%ebx  # 参数 pnext 存入 ebx
+   	cmpl %ebx,current  # 比较参数和 current，相等什么也不干；如果不等于 current，就开始进程切换，依次完成 PCB 的切换、TSS 中的内核栈指针的重写、内核栈的切换、LDT 的切换以及 PC 指针（即 CS:EIP）的切换。
+   	je 1f
 
-    # 切换 PCB
-    movl %ebx,%eax
-    xchgl %eax,current
+   	# 切换 PCB
+   	movl %ebx,%eax
+   	xchgl %eax,current
 
-    # TSS 中的内核栈指针的重写
-    movl tss,%ecx
-	addl $4096,%ebx
-	movl %ebx,ESP0(%ecx)
+   	# TSS 中的内核栈指针的重写
+   	movl tss,%ecx
+   	addl $4096,%ebx
+   	movl %ebx,ESP0(%ecx)
 
-    # 内核栈的切换
-	movl %esp,KERNEL_STACK(%eax)
-	movl 8(%ebp),%ebx
-	movl KERNEL_STACK(%ebx),%esp
+   	# 内核栈的切换
+   	movl %esp,KERNEL_STACK(%eax)
+   	movl 8(%ebp),%ebx
+   	movl KERNEL_STACK(%ebx),%esp
 
-    # LDT 的切换
-    movl 12(%ebp),%ecx  # 取出对应 LDT(next)的那个参数
-    lldt %cx  # 修改 LDTR 寄存器，一旦完成了修改，下一个进程在执行用户态程序时使用的映射表就是自己的 LDT 表了，地址空间实现了分离。
+   	# LDT 的切换
+   	movl 12(%ebp),%ecx  # 取出对应 LDT(next)的那个参数
+   	lldt %cx  # 修改 LDTR 寄存器，一旦完成了修改，下一个进程在执行用户态程序时使用的映射表就是自己的 LDT 表了，地址空间实现了分离。
 
 
-    movl $0x17,%ecx # 是重新取一下段寄存器 fs 的值，这两句话必须要加、也必须要出现在切换完 LDT 之后
-    mov %cx,%fs
+   	movl $0x17,%ecx # 是重新取一下段寄存器 fs 的值，这两句话必须要加、也必须要出现在切换完 LDT 之后
+   	mov %cx,%fs
 
-    cmpl %eax,last_task_used_math
-    jne 1f
-    clts
+   	cmpl %eax,last_task_used_math
+   	jne 1f
+   	clts
 
-1:  popl %eax
-    popl %ebx
-    popl %ecx
-    popl %ebp
-    ret
+1: 	popl %eax
+   	popl %ebx
+   	popl %ecx
+   	popl %ebp
+   	ret
 
 
 .align 2
 first_return_from_kernel:
-    popl %edx
-    popl %edi
-    popl %esi
-    pop %gs
-    pop %fs
-    pop %es
-    pop %ds
-    iret
+   	popl %edx
+   	popl %edi
+   	popl %esi
+   	pop %gs
+   	pop %fs
+   	pop %es
+   	pop %ds
+   	iret
 
 hd_interrupt:
 	pushl %eax
